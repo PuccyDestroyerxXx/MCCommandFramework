@@ -1,8 +1,8 @@
 import com.lupus.command.framework.commands.PlayerCommand;
 import org.bukkit.entity.Player;
 
-public class TestPlayerCommand extends PlayerCommand {
-	public TestPlayerCommand(){
+public class PlayerCommandMock extends PlayerCommand {
+	public PlayerCommandMock(){
 		super("TestPlayer",0);
 	}
 	@Override
