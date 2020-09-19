@@ -25,6 +25,11 @@ public abstract class SupCommand extends LupusCommand {
 		subCommands.values().toArray(subCmds);
 		return subCmds;
 	}
+
+	/**
+	 * Adds array of Sub Commands to Sub Commands list
+	 * @param subCommands
+	 */
 	public void addBulkCommands(LupusCommand[] subCommands){
 		for (int i = 0; i < subCommands.length; i++) {
 			this.subCommands.put(subCommands[i].getName().toLowerCase(),subCommands[i]);

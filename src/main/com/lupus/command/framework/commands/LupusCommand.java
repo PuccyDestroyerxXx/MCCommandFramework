@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class LupusCommand implements ILupusCommand {
-	String name;
-	String usage;
-	String description;
+	String name			= "NULL";
+	String usage		= "NULL";
+	String description	= "NULL";
 	int argumentAmount;
+	List<String> permissions = new ArrayList<>();
 	HashMap<Integer, List<String>> autoComplete = new HashMap<>();
 
 	public LupusCommand(String name,String usage,String description,int argumentAmount){
@@ -30,11 +31,30 @@ public abstract class LupusCommand implements ILupusCommand {
 	}
 	public LupusCommand(String name,int argumentAmount){
 		this.name = name;
-		this.usage = "NULL";
-		this.description = "NULL";
 		this.argumentAmount = argumentAmount;
 
 	}
+
+	/**
+	 * Execute checks permissions and argument amount before running command
+	 * @param sender
+	 * @param args
+	 */
+	@Override
+	public void execute(CommandSender sender,String[] args){
+		boolean hasPermission = permissions.stream().anyMatch(sender::hasPermission);
+		if (hasPermission && !isArgumentAmountGood(sender,args)){
+			return;
+		}
+		run(sender, args);
+	}
+	/**
+	 * Checks if argument length is minimal argumentAmount<br/>
+	 * Sends to sender info about correct use of command
+	 * @param sender sender
+	 * @param args arguments
+	 * @return whether argument length is less than minimal (false) if not then true
+	 */
 	public boolean isArgumentAmountGood(CommandSender sender, String[] args){
 		if (args.length < argumentAmount){
 			sender.sendMessage(ColorUtil.text2Color("Prawidłowe użycie komendy: " + usage));
@@ -56,28 +76,73 @@ public abstract class LupusCommand implements ILupusCommand {
 			autoComplete.get(argIndex).add(argumentAutoComplete);
 		}
 	}
+
+	/**
+	 * Gets minimum argument amount
+	 * @return minimum argument amount
+	 */
 	public int getArgumentAmount(){return argumentAmount;}
+
+	/**
+	 * Get description of Command
+	 * @return colored description of command
+	 */
 	public String getDescription(){
 		return ColorUtil.text2Color(description);
 	}
+
+	/**
+	 * Gets usage of command
+	 * @return colored usage of command
+	 */
 	public String usage(){
 		return ColorUtil.text2Color(usage);
 	}
+
+	/**
+	 * Get usage and description of command separated by given colored string " &5 - &r"
+	 * @return colored usage and description of command
+	 */
 	public String getUsageDesc() { return ColorUtil.text2Color(usage() +" &5- &r"+ getDescription());}
+
+	/**
+	 * Gets name of command
+	 * @return name of command
+	 */
 	@Override
 	public String getName(){
 		return ColorUtil.text2Color(name);
 	}
+
+	/**
+	 * Checks if given string is matching command name
+	 * @param cmd string to check
+	 * @return boolean result of cmd.equals(name);
+	 */
 	@Override
 	public boolean isMatch(String cmd) {
 		return cmd.equals(name);
 	}
+
+	/**
+	 * Points to the Usage.usage function
+	 */
 	public static String usage(String usage){
 		return Usage.usage(usage);
 	}
+	/**
+	 * Points to the Usage.usage function
+	 */
 	public static String usage(String command,String usage){
 		return Usage.usage(command,usage);
 	}
+
+	/**
+	 * Gets final arguments from the string array
+	 * @param args argument array to process
+	 * @param amount amount of last args to return
+	 * @return Last amount of string objects in given String array
+	 */
 	@Override
 	public String[] getFinalArgs(@NotNull String[] args, int amount){
 		String[] argsNew = new String[amount];
@@ -85,6 +150,13 @@ public abstract class LupusCommand implements ILupusCommand {
 			System.arraycopy(args, args.length - amount + 1, argsNew, args.length - amount + 1, -1 - amount);
 		return argsNew;
 	}
+
+	/**
+	 * Get first String objects in String array from the given index
+	 * @param args String array
+	 * @param from index to get from
+	 * @return String array of String objects from given index
+	 */
 	@Override
 	public String[] getArgs(@NotNull String[] args, int from){
 		String[] argsNew = new String[args.length-from];
