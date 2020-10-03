@@ -1,9 +1,10 @@
 package com.lupus.command.framework.commands;
 
-import com.lupus.command.framework.utils.ColorUtil;
-import com.lupus.command.framework.utils.Usage;
+import com.lupus.utils.ColorUtil;
+import com.lupus.utils.Usage;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;

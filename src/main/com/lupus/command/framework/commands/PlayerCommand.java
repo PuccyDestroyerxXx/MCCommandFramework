@@ -26,9 +26,13 @@ public abstract class PlayerCommand extends LupusCommand {
 	@Override
 	public void run(CommandSender sender, String[] args){
 		if(sender instanceof Player){
-			run((Player)sender,args);
+			if (!CommandLimiter.INSTANCE.hasLimit((Player) sender,name))
+				run((Player)sender,args);
+			else
+				sender.sendMessage(ChatColor.RED + "Masz nałożony limit czasowy na tą komende możesz użyć jej ponownie za " + CommandLimiter.INSTANCE.getTimeLeft((Player) sender,name));
 		}
-		sender.sendMessage(ChatColor.RED+ "Komenda tylko dla gracza");
+		else
+			sender.sendMessage(ChatColor.RED+ "Komenda tylko dla gracza");
 	}
 
 	/**
