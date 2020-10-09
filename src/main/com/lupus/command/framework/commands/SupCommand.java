@@ -46,8 +46,11 @@ public abstract class SupCommand extends LupusCommand {
 		if (!isArgumentAmountGood(sender,args)) {
 			return;
 		}
-		String subCommand = args[0].toLowerCase();
-		LupusCommand command = subCommands.get(subCommand);
+		LupusCommand command = null;
+		if (args.length >= 1){
+			String subCommand = args[0].toLowerCase();
+			command = subCommands.get(subCommand);
+		}
 		boolean ignoreRest = optionalOperations(sender,args);
 		if (ignoreRest)
 			return;
