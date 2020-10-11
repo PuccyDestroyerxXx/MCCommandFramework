@@ -54,7 +54,7 @@ public abstract class SupCommand extends LupusCommand {
 		boolean ignoreRest = optionalOperations(sender,args);
 		if (ignoreRest)
 			return;
-		getArgs(args,1);
+		args = getArgs(args,1);
 		if (command != null)
 			command.run(sender,args);
 		else
