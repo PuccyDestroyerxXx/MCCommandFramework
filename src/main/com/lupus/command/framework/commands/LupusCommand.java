@@ -3,6 +3,7 @@ package com.lupus.command.framework.commands;
 import com.lupus.utils.ColorUtil;
 import com.lupus.utils.Usage;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class LupusCommand implements ILupusCommand {
-	String name			= "NULL";
+	String name			;
 	String usage		= "NULL";
 	String description	= "NULL";
 	int argumentAmount;
@@ -34,6 +35,10 @@ public abstract class LupusCommand implements ILupusCommand {
 		this.name = name;
 		this.argumentAmount = argumentAmount;
 
+	}
+	public void executeAsync(CommandSender sender, String[] args, Plugin plugin){
+		ASyncCommand command = new ASyncCommand(this,sender,args);
+		command.runTaskAsynchronously(plugin);
 	}
 
 	/**
