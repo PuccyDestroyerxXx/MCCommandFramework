@@ -36,6 +36,13 @@ public abstract class LupusCommand implements ILupusCommand {
 		this.argumentAmount = argumentAmount;
 
 	}
+
+	/**
+	 * Executes command ASync
+	 * @param sender command sender
+	 * @param args arguments of command
+	 * @param plugin plugin that sends ASync
+	 */
 	public void executeAsync(CommandSender sender, String[] args, Plugin plugin){
 		ASyncCommand command = new ASyncCommand(this,sender,args);
 		command.runTaskAsynchronously(plugin);

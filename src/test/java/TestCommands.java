@@ -1,5 +1,6 @@
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
 import com.lupus.command.framework.commands.LupusCommand;
 import com.lupus.command.framework.commands.PlayerCommand;
 import com.lupus.command.framework.commands.PlayerSupCommand;
@@ -13,6 +14,7 @@ public class TestCommands {
 	public static boolean run = true;
 	public static boolean runPlayer = true;
 	public static ServerMock mock = MockBukkit.mock();
+	public static WorldMock mockWorld = mock.addSimpleWorld("world");
 	@Test
 	public void LupusCommandMock_RunVariableNegate_Success(){
 		run = true;
