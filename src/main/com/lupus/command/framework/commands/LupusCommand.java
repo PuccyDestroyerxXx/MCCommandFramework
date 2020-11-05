@@ -1,40 +1,58 @@
 package com.lupus.command.framework.commands;
 
+import com.lupus.command.LupusCommandFrameWork;
 import com.lupus.utils.ColorUtil;
 import com.lupus.utils.Usage;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class LupusCommand implements ILupusCommand {
-	String name			;
-	String usage		= "NULL";
-	String description	= "NULL";
+public abstract class LupusCommand extends Command implements ILupusCommand {
 	int argumentAmount;
 	List<String> permissions = new ArrayList<>();
 	HashMap<Integer, List<String>> autoComplete = new HashMap<>();
+	static final String FAILED_PERMISSION_CHECK = colorText("&8[&6&lT&b&lO&f&l&8]&4&lBrak permisji do tej komendy");
 
-	public LupusCommand(String name,String usage,String description,int argumentAmount){
-		this.name = name;
-		this.usage = usage;
-		this.description = description;
+	public LupusCommand(String name,String usage,String description,List<String> aliases,List<String> permissionNodes,int argumentAmount){
+		super(name,usage,description,aliases);
 		this.argumentAmount = argumentAmount;
+		for (String permissionNode : permissionNodes) {
+			super.setPermission(permissionNode);
+		}
+		super.setPermissionMessage(FAILED_PERMISSION_CHECK);
+	}
+	public LupusCommand(String name,String usage,String desc,List<String> aliases,int argumentAmount){
+		this(name,colorText(usage),colorText(desc),aliases,new ArrayList<>(),argumentAmount);
+	}
+
+	public LupusCommand(String name,String usage,String desc,int argumentAmount){
+		this(name,colorText(usage),colorText(desc),new ArrayList<>(),new ArrayList<>(),argumentAmount);
 	}
 	public LupusCommand(String name,String usage,int argumentAmount){
-		this.name = name;
-		this.usage = usage;
-		this.argumentAmount = argumentAmount;
-
+		this(name,usage,colorText("&4&l-&r"),new ArrayList<>(),new ArrayList<>(),argumentAmount);
 	}
 	public LupusCommand(String name,int argumentAmount){
-		this.name = name;
-		this.argumentAmount = argumentAmount;
+		this(name,colorText("&4&l-&r"),colorText("&4&l-&r"),new ArrayList<>(),new ArrayList<>(),argumentAmount);
+	}
 
+	@Override
+	public boolean execute(CommandSender commandSender, String s, String[] strings) {
+		execute(commandSender,strings);
+		return true;
 	}
 
 	/**
@@ -70,7 +88,7 @@ public abstract class LupusCommand implements ILupusCommand {
 	 */
 	public boolean isArgumentAmountGood(CommandSender sender, String[] args){
 		if (args.length < argumentAmount){
-			sender.sendMessage(ColorUtil.text2Color("Prawidłowe użycie komendy: " + usage));
+			sender.sendMessage(ColorUtil.text2Color("Prawidłowe użycie komendy: " + getUsage()));
 			return false;
 		}
 		return true;
@@ -109,7 +127,7 @@ public abstract class LupusCommand implements ILupusCommand {
 	 * @return colored usage of command
 	 */
 	public String usage(){
-		return ColorUtil.text2Color(usage);
+		return ColorUtil.text2Color(this.usageMessage);
 	}
 
 	/**
@@ -124,7 +142,7 @@ public abstract class LupusCommand implements ILupusCommand {
 	 */
 	@Override
 	public String getName(){
-		return ColorUtil.text2Color(name);
+		return super.getName();
 	}
 
 	/**
@@ -134,7 +152,7 @@ public abstract class LupusCommand implements ILupusCommand {
 	 */
 	@Override
 	public boolean isMatch(String cmd) {
-		return cmd.equals(name);
+		return cmd.equals(this.getName());
 	}
 
 	/**
@@ -175,5 +193,28 @@ public abstract class LupusCommand implements ILupusCommand {
 		String[] argsNew = new String[args.length-from];
 		if (args.length - from >= 0) System.arraycopy(args, from, argsNew, 0, args.length - from);
 		return argsNew;
+	}
+	protected static String colorText(String txt){
+		return ColorUtil.text2Color(txt);
+	}
+	private static Object getPrivateField(Object object, String field)throws SecurityException,
+			NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		Class<?> clazz = object.getClass();
+		Field objectField = clazz.getDeclaredField(field);
+		objectField.setAccessible(true);
+		Object result = objectField.get(object);
+		objectField.setAccessible(false);
+		return result;
+	}
+	@Override
+	public void registerCommand(){
+		try {
+			Object result = getPrivateField(Bukkit.getServer().getPluginManager(), "commandMap");
+			SimpleCommandMap commandMap = (SimpleCommandMap) result;
+
+			commandMap.register(super.getName(),"LupusCommand",this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

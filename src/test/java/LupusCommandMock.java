@@ -8,8 +8,6 @@ public class LupusCommandMock extends LupusCommand {
 	}
 	@Override
 	public void run(CommandSender sender, String[] args) {
-		System.out.println("Running command");
-		TestCommands.run = !TestCommands.run;
-		System.out.println("Command stopped");
+
 	}
 }
