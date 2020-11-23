@@ -2,7 +2,7 @@ package com.lupus.command.framework.commands;
 
 import org.bukkit.command.CommandSender;
 
-import java.util.HashMap;
+import java.util.*;
 
 public abstract class SupCommand extends LupusCommand {
 	private final HashMap<String, LupusCommand> subCommands = new HashMap<>();
@@ -10,15 +10,14 @@ public abstract class SupCommand extends LupusCommand {
 		super(name,usage,description,argumentAmount);
 		addBulkCommands(subCommands);
 
+
 	}
 	public SupCommand(String name,String usage,int argumentAmount, LupusCommand[] subCommands) {
-		super(name,usage,argumentAmount);
-		addBulkCommands(subCommands);
+		this(name,usage,"",argumentAmount,subCommands);
 
 	}
 	public SupCommand(String name,int argumentAmount, LupusCommand[] subCommands){
-		super(name,argumentAmount);
-		addBulkCommands(subCommands);
+		this(name,"",argumentAmount,subCommands);
 	}
 	public LupusCommand[] getSubCommands(){
 		LupusCommand[] subCmds = new LupusCommand[subCommands.values().size()];
@@ -59,6 +58,21 @@ public abstract class SupCommand extends LupusCommand {
 			command.run(sender,args);
 		else
 			usage();
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		if (args.length < 1)
+			return super.tabComplete(sender,alias, args);
+		List<String> answer = new ArrayList<>();
+		String lastWord = args[args.length -1];
+		Set<String> values = subCommands.keySet();
+		for (String value : values){
+			if (value.startsWith(lastWord)){
+				answer.add(value);
+			}
+		}
+		return answer;
 	}
 
 	/**

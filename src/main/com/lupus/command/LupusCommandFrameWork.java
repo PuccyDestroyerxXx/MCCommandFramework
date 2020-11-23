@@ -1,11 +1,14 @@
 package com.lupus.command;
 
 import com.lupus.command.framework.commands.ILupusCommand;
+import com.lupus.command.framework.commands.LupusCommand;
+import com.lupus.command.framework.commands.SupCommand;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginLoadOrder;
+import org.bukkit.Server;
+import org.bukkit.command.defaults.HelpCommand;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.Description;
-import org.bukkit.plugin.java.annotation.plugin.LoadOn;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
@@ -18,9 +21,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
 import java.lang.reflect.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Plugin(name="LupusCommandFramework", version="1.2-SNAPSHOT")
 @Description(desc = "Simple case opener")
@@ -29,6 +30,7 @@ import java.util.Set;
 
 public class LupusCommandFrameWork extends JavaPlugin {
 	static LupusCommandFrameWork mainPlugin;
+	static List<ILupusCommand> registeredCommands = new ArrayList<>();
 	public static LupusCommandFrameWork getInstance(){
 		return mainPlugin;
 	}
@@ -51,20 +53,24 @@ public class LupusCommandFrameWork extends JavaPlugin {
 					if (classLoader != null)
 						registerAllCommands(plug,classLoader);
 				}
+				try {
+					registerCommandAliasesInServer();
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+					e.printStackTrace();
+				}
 			}
-		}.runTaskLater(this,200);
+		}.runTaskLater(this,50);
 	}
 	public static void registerAllCommands(Object caller,ClassLoader classLoader){
 		if (!(caller instanceof JavaPlugin))
 			return;
-		JavaPlugin callerPlugin = (JavaPlugin)caller;
 		String pckgName = caller.getClass().getPackage().getName();
-		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+		List<ClassLoader> classLoadersList = new LinkedList<>();
 		classLoadersList.add(classLoader);
 		Reflections reflections = null;
 		try {
 			reflections = new Reflections(new ConfigurationBuilder()
-					.setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
+					.setScanners(new SubTypesScanner(false), new ResourcesScanner())
 					.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
 					.filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(pckgName))));
 		}
@@ -72,21 +78,46 @@ public class LupusCommandFrameWork extends JavaPlugin {
 			return;
 		}
 		Set<Class<? extends ILupusCommand>> clazzSet = reflections.getSubTypesOf(ILupusCommand.class);
-
-
-		for (Class<? extends ILupusCommand> aClass : clazzSet) {
-			int modifiers = aClass.getModifiers();
-			if(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)){
+		Set<Class<? extends SupCommand>> supCommands = reflections.getSubTypesOf(SupCommand.class);
+		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();
+		for (Class<? extends SupCommand> aClass : supCommands){
+			ILupusCommand command = constructWithNoArgs(aClass);
+			if (command == null)
 				continue;
-			}
-			try {
-				Constructor<? extends ILupusCommand> constr = aClass.getConstructor();
-				ILupusCommand instance = constr.newInstance();
-				instance.registerCommand();
+			SupCommand supCommand = (SupCommand) command;
 
-			} catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-				e.printStackTrace();
+			LupusCommand[] subCmds = supCommand.getSubCommands();
+			for (LupusCommand subCmd : subCmds) {
+				subCommands.add(subCmd.getClass());
 			}
 		}
+		for (Class<? extends ILupusCommand> aClass : clazzSet) {
+			if (subCommands.contains(aClass))
+				continue;
+			ILupusCommand command = constructWithNoArgs(aClass);
+			if (command != null) {
+				command.registerCommand();
+				registeredCommands.add(command);
+			}
+		}
+	}
+	private static void registerCommandAliasesInServer() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Class<? extends Server> clazz = Bukkit.getServer().getClass();
+		Method m = clazz.getDeclaredMethod("syncCommands");
+		m.invoke(Bukkit.getServer());
+	}
+	private static ILupusCommand constructWithNoArgs(Class<? extends ILupusCommand> aClass){
+		int modifiers = aClass.getModifiers();
+		if(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)){
+			return null;
+		}
+		try {
+			Constructor<? extends ILupusCommand> constr = aClass.getConstructor();
+			ILupusCommand instance = constr.newInstance();
+			return instance;
+		} catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

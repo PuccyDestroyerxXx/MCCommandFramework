@@ -1,22 +1,17 @@
 package com.lupus.command.framework.commands;
 
-import com.lupus.command.LupusCommandFrameWork;
 import com.lupus.utils.ColorUtil;
 import com.lupus.utils.Usage;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +23,10 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	static final String FAILED_PERMISSION_CHECK = colorText("&8[&6&lT&b&lO&f&l&8]&4&lBrak permisji do tej komendy");
 
 	public LupusCommand(String name,String usage,String description,List<String> aliases,List<String> permissionNodes,int argumentAmount){
-		super(name,usage,description,aliases);
+		super(name,description,usage,aliases);
 		this.argumentAmount = argumentAmount;
+		aliases.add(name);
+		this.setAliases(aliases);
 		for (String permissionNode : permissionNodes) {
 			super.setPermission(permissionNode);
 		}
@@ -73,8 +70,14 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 */
 	@Override
 	public void execute(CommandSender sender,String[] args){
+		if(sender instanceof Player)
+			if (CommandLimiter.INSTANCE.hasLimit((Player)sender,getName())) {
+				sender.sendMessage(ChatColor.RED + "Masz nałożony limit czasowy na tą komende możesz użyć jej ponownie za " +
+						ChatColor.YELLOW + CommandLimiter.INSTANCE.getTimeLeft((Player) sender, getName()) / 1000 + "s");
+				return;
+			}
 		boolean hasPermission = permissions.stream().anyMatch(sender::hasPermission);
-		if (hasPermission && !isArgumentAmountGood(sender,args)){
+		if (hasPermission || !isArgumentAmountGood(sender,args)){
 			return;
 		}
 		run(sender, args);
@@ -106,6 +109,11 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		}else {
 			autoComplete.get(argIndex).add(argumentAutoComplete);
 		}
+	}
+
+	@Override
+	public List<String> getAliases() {
+		return super.getAliases();
 	}
 
 	/**
@@ -211,7 +219,6 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		try {
 			Object result = getPrivateField(Bukkit.getServer().getPluginManager(), "commandMap");
 			SimpleCommandMap commandMap = (SimpleCommandMap) result;
-
 			commandMap.register(super.getName(),"LupusCommand",this);
 		} catch (Exception e) {
 			e.printStackTrace();
