@@ -6,11 +6,12 @@ import java.util.*;
 
 public abstract class SupCommand extends LupusCommand {
 	private final HashMap<String, LupusCommand> subCommands = new HashMap<>();
-	public SupCommand(String name,String usage,String description,int argumentAmount, LupusCommand[] subCommands) {
-		super(name,usage,description,argumentAmount);
+	public SupCommand(String name,String usage,String description,List<String> aliases,List<String> permissionNodes,int argumentAmount, LupusCommand[] subCommands) {
+		super(name,usage,description,aliases,permissionNodes,argumentAmount);
 		addBulkCommands(subCommands);
-
-
+	}
+	public SupCommand(String name,String usage,String description,int argumentAmount, LupusCommand[] subCommands) {
+		this(name,usage,description,new ArrayList<>(),new ArrayList<>(),argumentAmount,subCommands);
 	}
 	public SupCommand(String name,String usage,int argumentAmount, LupusCommand[] subCommands) {
 		this(name,usage,"",argumentAmount,subCommands);
@@ -30,9 +31,16 @@ public abstract class SupCommand extends LupusCommand {
 	 * @param subCommands
 	 */
 	public void addBulkCommands(LupusCommand[] subCommands){
+		List<String> commandList = new ArrayList<>();
 		for (int i = 0; i < subCommands.length; i++) {
-			this.subCommands.put(subCommands[i].getName().toLowerCase(),subCommands[i]);
+			LupusCommand subCommand = subCommands[i];
+			this.subCommands.put(subCommand.getName().toLowerCase(),subCommand);
+			commandList.add(subCommands[i].getName());
+			for (String alias : subCommand.getAliases()) {
+				this.subCommands.put(alias,subCommand);
+			}
 		}
+		autoComplete.put(0,commandList);
 	}
 	/**
 	 * Executes automatically subCommands
@@ -65,13 +73,26 @@ public abstract class SupCommand extends LupusCommand {
 		if (args.length < 1)
 			return super.tabComplete(sender,alias, args);
 		List<String> answer = new ArrayList<>();
-		String lastWord = args[args.length -1];
-		Set<String> values = subCommands.keySet();
-		for (String value : values){
-			if (value.startsWith(lastWord)){
-				answer.add(value);
+		String lastWord = args[args.length - 1];
+		if (args.length == 1){
+			Set<String> values = subCommands.keySet();
+			for (String value : values){
+				if (value.startsWith(lastWord)){
+					answer.add(value);
+				}
 			}
 		}
+		else {
+			String[] betterArgs = getArgs(args,1);
+			if (subCommands != null) {
+				LupusCommand command = subCommands.get(args[0]);
+				if (command != null)
+					answer = command.tabComplete(sender, args[0], betterArgs);
+			}
+			if (answer == null)
+				answer = super.tabComplete(sender, alias, args);
+		}
+
 		return answer;
 	}
 

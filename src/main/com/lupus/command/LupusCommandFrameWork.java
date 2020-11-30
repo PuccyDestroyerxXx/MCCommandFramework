@@ -59,7 +59,7 @@ public class LupusCommandFrameWork extends JavaPlugin {
 					e.printStackTrace();
 				}
 			}
-		}.runTaskLater(this,50);
+		}.runTaskLater(this,1);
 	}
 	public static void registerAllCommands(Object caller,ClassLoader classLoader){
 		if (!(caller instanceof JavaPlugin))
@@ -80,35 +80,48 @@ public class LupusCommandFrameWork extends JavaPlugin {
 		Set<Class<? extends ILupusCommand>> clazzSet = reflections.getSubTypesOf(ILupusCommand.class);
 		Set<Class<? extends SupCommand>> supCommands = reflections.getSubTypesOf(SupCommand.class);
 		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();
-		for (Class<? extends SupCommand> aClass : supCommands){
-			ILupusCommand command = constructWithNoArgs(aClass);
-			if (command == null)
-				continue;
-			SupCommand supCommand = (SupCommand) command;
+		if (supCommands.size() != 0)
+			for (Class<? extends SupCommand> aClass : supCommands){
+				ILupusCommand command = constructWithNoArgs(aClass);
+				if (command == null)
+					continue;
+				SupCommand supCommand = (SupCommand) command;
 
-			LupusCommand[] subCmds = supCommand.getSubCommands();
-			for (LupusCommand subCmd : subCmds) {
-				subCommands.add(subCmd.getClass());
+				LupusCommand[] subCmds = supCommand.getSubCommands();
+				for (LupusCommand subCmd : subCmds) {
+					subCommands.add(subCmd.getClass());
+				}
 			}
-		}
-		for (Class<? extends ILupusCommand> aClass : clazzSet) {
-			if (subCommands.contains(aClass))
-				continue;
-			ILupusCommand command = constructWithNoArgs(aClass);
-			if (command != null) {
-				command.registerCommand();
-				registeredCommands.add(command);
+		if (clazzSet.size() != 0)
+			for (Class<? extends ILupusCommand> aClass : clazzSet) {
+				if (subCommands.size() != 0)
+					if (subCommands.contains(aClass))
+						continue;
+
+				ILupusCommand command = constructWithNoArgs(aClass);
+				if (command != null) {
+					command.registerCommand();
+					registeredCommands.add(command);
+				}
 			}
-		}
 	}
 	private static void registerCommandAliasesInServer() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Class<? extends Server> clazz = Bukkit.getServer().getClass();
 		Method m = clazz.getDeclaredMethod("syncCommands");
 		m.invoke(Bukkit.getServer());
 	}
+	public static boolean doesClassHasNoArgConstruct(Class<?> aClass){
+		for (Constructor<?> constructor : aClass.getConstructors()) {
+			// In Java 7-, use getParameterTypes and check the length of the array returned
+			if (constructor.getParameterCount() == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
 	private static ILupusCommand constructWithNoArgs(Class<? extends ILupusCommand> aClass){
 		int modifiers = aClass.getModifiers();
-		if(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)){
+		if(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers) || !doesClassHasNoArgConstruct(aClass)){
 			return null;
 		}
 		try {

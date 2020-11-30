@@ -14,14 +14,14 @@ public class CommandLimiter {
 	CommandLimiter(){
 	}
 	public void addLimit(UUID p,String command,long time){
+		time +=System.currentTimeMillis();
 		if (playerActionLimiter.containsKey(p))
-			playerActionLimiter.get(p).put(command,time);
-		else
-			playerActionLimiter.put(p,new HashMap<String,Long>(){
-				{
-					put(command,time);
-				}
-			});
+			playerActionLimiter.get(p).put(command.toLowerCase(),time);
+		else{
+			HashMap<String,Long> hashMap = new HashMap<>();
+			hashMap.put(command.toLowerCase(),time);
+			playerActionLimiter.put(p,hashMap);
+		}
 
 	}
 	public void addLimit(Player p, String command, long time){
@@ -38,6 +38,7 @@ public class CommandLimiter {
 		return hasLimit(p.getUniqueId(),command);
 	}
 	public boolean hasLimit(UUID p,String command){
+		command = command.toLowerCase();
 		if (playerActionLimiter.containsKey(p)) {
 			if (playerActionLimiter.get(p).containsKey(command)) {
 				return playerActionLimiter.get(p).get(command) > System.currentTimeMillis();

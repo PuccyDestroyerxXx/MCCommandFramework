@@ -12,24 +12,23 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public abstract class LupusCommand extends Command implements ILupusCommand {
 	int argumentAmount;
-	List<String> permissions = new ArrayList<>();
-	HashMap<Integer, List<String>> autoComplete = new HashMap<>();
+	Set<String> permissions = new HashSet<>();
+	protected HashMap<Integer, List<String>> autoComplete = new HashMap<>();
 	static final String FAILED_PERMISSION_CHECK = colorText("&8[&6&lT&b&lO&f&l&8]&4&lBrak permisji do tej komendy");
 
 	public LupusCommand(String name,String usage,String description,List<String> aliases,List<String> permissionNodes,int argumentAmount){
 		super(name,description,usage,aliases);
 		this.argumentAmount = argumentAmount;
-		aliases.add(name);
-		this.setAliases(aliases);
-		for (String permissionNode : permissionNodes) {
-			super.setPermission(permissionNode);
-		}
+		List<String> resultAliases = new ArrayList<>(aliases);
+		resultAliases.add(name);
+		this.setAliases(resultAliases);
+		if (permissionNodes.size() > 0)
+			super.setPermission(permissionNodes.get(0));
+		permissions.addAll(permissionNodes);
 		super.setPermissionMessage(FAILED_PERMISSION_CHECK);
 	}
 	public LupusCommand(String name,String usage,String desc,List<String> aliases,int argumentAmount){
@@ -47,8 +46,15 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender commandSender, String s, String[] strings) {
-		execute(commandSender,strings);
+	public boolean execute(CommandSender sender, String s, String[] strings) {
+		if (!testPermission(sender)) return true;
+		if(sender instanceof Player)
+			if (CommandLimiter.INSTANCE.hasLimit((Player)sender,getName())) {
+				sender.sendMessage(ChatColor.RED + "Masz nałożony limit czasowy na tą komende możesz użyć jej ponownie za " +
+						ChatColor.YELLOW + CommandLimiter.INSTANCE.getTimeLeft((Player) sender, getName()) / 1000 + "s");
+				return true;
+			}
+		execute(sender,strings);
 		return true;
 	}
 
@@ -70,14 +76,13 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 */
 	@Override
 	public void execute(CommandSender sender,String[] args){
-		if(sender instanceof Player)
-			if (CommandLimiter.INSTANCE.hasLimit((Player)sender,getName())) {
-				sender.sendMessage(ChatColor.RED + "Masz nałożony limit czasowy na tą komende możesz użyć jej ponownie za " +
-						ChatColor.YELLOW + CommandLimiter.INSTANCE.getTimeLeft((Player) sender, getName()) / 1000 + "s");
-				return;
+		if (permissions.size() != 0) {
+			boolean hasPermission = permissions.stream().anyMatch(sender::hasPermission);
+			if (!hasPermission){
+				sender.sendMessage(super.getPermissionMessage());
 			}
-		boolean hasPermission = permissions.stream().anyMatch(sender::hasPermission);
-		if (hasPermission || !isArgumentAmountGood(sender,args)){
+		}
+		if (!isArgumentAmountGood(sender,args)){
 			return;
 		}
 		run(sender, args);
