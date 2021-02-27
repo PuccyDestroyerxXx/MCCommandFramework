@@ -29,11 +29,12 @@ public abstract class PlayerCommand extends LupusCommand {
 	@Override
 	public void run(CommandSender sender, ArgumentList args) throws Exception{
 		if(sender instanceof Player){
-			run((Player)sender,args);
+			Player player = (Player)sender;
+			run(player,args);
 		}
 		else
 			sender.sendMessage(ChatColor.RED+ "Komenda tylko dla gracza");
 	}
 
-	protected abstract void run(Player executor, String[] args);
+	protected abstract void run(Player executor, ArgumentList args);
 }
