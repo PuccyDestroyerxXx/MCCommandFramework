@@ -1,5 +1,5 @@
 package com.lupus.command.framework.commands.arguments;
 
-public interface ArgumentConverter {
-	void run();
+public interface ArgumentRunner {
+	Object run(String... arguments);
 }

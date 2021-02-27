@@ -3,7 +3,7 @@ package com.lupus.command.framework.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandFactory {
+public class CommandMeta {
 	private String name;
 	private String usage;
 	private String description;
@@ -28,31 +28,32 @@ public class CommandFactory {
 	}
 
 
-	public void setName(String name) {
+	public CommandMeta setName(String name) {
 		this.name = name;
+		return this;
 	}
 
-	public CommandFactory setArgumentAmount(int argumentAmount) {
+	public CommandMeta setArgumentAmount(int argumentAmount) {
 		this.argumentAmount = argumentAmount;
 		return this;
 	}
 
-	public CommandFactory setDescription(String description) {
+	public CommandMeta setDescription(String description) {
 		this.description = description;
 		return this;
 	}
 
-	public CommandFactory setUsage(String usage) {
+	public CommandMeta setUsage(String usage) {
 		this.usage = usage;
 		return this;
 	}
 
-	public CommandFactory addPermission(String permissionNode) {
+	public CommandMeta addPermission(String permissionNode) {
 		permissions.add(permissionNode);
 		return this;
 	}
 
-	public CommandFactory addAlias(String alias) {
+	public CommandMeta addAlias(String alias) {
 		aliases.add(alias);
 		return this;
 	}

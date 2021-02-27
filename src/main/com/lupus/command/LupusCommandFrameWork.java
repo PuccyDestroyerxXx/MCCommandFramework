@@ -55,8 +55,8 @@ public class LupusCommandFrameWork extends JavaPlugin {
 				}
 				try {
 					registerCommandAliasesInServer();
-				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					e.printStackTrace();
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+
 				}
 			}
 		}.runTaskLater(this,1);
@@ -64,10 +64,12 @@ public class LupusCommandFrameWork extends JavaPlugin {
 	public static void registerAllCommands(Object caller,ClassLoader classLoader){
 		if (!(caller instanceof JavaPlugin))
 			return;
+
 		String pckgName = caller.getClass().getPackage().getName();
 		List<ClassLoader> classLoadersList = new LinkedList<>();
 		classLoadersList.add(classLoader);
 		Reflections reflections = null;
+
 		try {
 			reflections = new Reflections(new ConfigurationBuilder()
 					.setScanners(new SubTypesScanner(false), new ResourcesScanner())
@@ -80,6 +82,7 @@ public class LupusCommandFrameWork extends JavaPlugin {
 		Set<Class<? extends ILupusCommand>> clazzSet = reflections.getSubTypesOf(ILupusCommand.class);
 		Set<Class<? extends SupCommand>> supCommands = reflections.getSubTypesOf(SupCommand.class);
 		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();
+
 		if (supCommands.size() != 0)
 			for (Class<? extends SupCommand> aClass : supCommands){
 				ILupusCommand command = constructWithNoArgs(aClass);
@@ -128,8 +131,8 @@ public class LupusCommandFrameWork extends JavaPlugin {
 			Constructor<? extends ILupusCommand> constr = aClass.getConstructor();
 			ILupusCommand instance = constr.newInstance();
 			return instance;
-		} catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-			e.printStackTrace();
+		} catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException ignored) {
+
 		}
 		return null;
 	}

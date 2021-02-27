@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestCommands {
-/*	LupusCommandMock lupusCommand = new LupusCommandMock();
+	LupusCommandMock lupusCommand = new LupusCommandMock();
 	SupCommandMock supCommand = new SupCommandMock();
 	public static boolean run = true;
 	public static boolean runPlayer = true;
@@ -47,4 +47,4 @@ public class TestCommands {
 		assertTrue(runPlayer);
 
 	}
-*/}
+}
