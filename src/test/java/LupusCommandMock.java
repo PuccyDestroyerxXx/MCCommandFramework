@@ -1,4 +1,5 @@
 import com.lupus.command.framework.commands.LupusCommand;
+import com.lupus.command.framework.commands.arguments.ArgumentList;
 import org.bukkit.command.CommandSender;
 
 public class LupusCommandMock extends LupusCommand {
@@ -7,7 +8,7 @@ public class LupusCommandMock extends LupusCommand {
 
 	}
 	@Override
-	public void run(CommandSender sender, String[] args) {
+	public void run(CommandSender sender, ArgumentList argumentList) {
 
 	}
 }

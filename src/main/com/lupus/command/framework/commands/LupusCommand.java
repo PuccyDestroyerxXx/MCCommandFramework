@@ -1,5 +1,6 @@
 package com.lupus.command.framework.commands;
 
+import com.lupus.command.framework.commands.arguments.ArgumentList;
 import com.lupus.utils.ColorUtil;
 import com.lupus.utils.Usage;
 import org.bukkit.Bukkit;
@@ -89,16 +90,23 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 */
 	@Override
 	public void execute(CommandSender sender,String[] args){
+		ArgumentList arguments = new ArgumentList();
+		arguments.addAll(Arrays.asList(args));
 		if (permissions.size() != 0) {
 			boolean hasPermission = permissions.stream().anyMatch(sender::hasPermission);
 			if (!hasPermission){
 				sender.sendMessage(super.getPermissionMessage());
 			}
 		}
-		if (!isArgumentAmountGood(sender,args)){
+		if (!isArgumentAmountGood(sender,arguments)){
 			return;
 		}
-		run(sender, args);
+
+		try {
+			run(sender, arguments);
+		} catch (Exception exception) {
+			sender.sendMessage(exception.getMessage());
+		}
 	}
 	/**
 	 * Checks if argument length is minimal argumentAmount<br/>
@@ -107,8 +115,8 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * @param args arguments
 	 * @return whether argument length is less than minimal (false) if not then true
 	 */
-	public boolean isArgumentAmountGood(CommandSender sender, String[] args){
-		if (args.length < argumentAmount){
+	public boolean isArgumentAmountGood(CommandSender sender, ArgumentList args){
+		if (args.size() < argumentAmount){
 			sender.sendMessage(ColorUtil.text2Color("Prawidłowe użycie komendy: " + getUsage()));
 			return false;
 		}
@@ -193,7 +201,12 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 			System.arraycopy(args, args.length - amount + 1, argsNew, args.length - amount + 1, -1 - amount);
 		return argsNew;
 	}
-
+	@Override
+	public String[] getArgs(@NotNull String[] args, int from){
+		String[] argsNew = new String[args.length-from];
+		if (args.length - from >= 0) System.arraycopy(args, from, argsNew, 0, args.length - from);
+		return argsNew;
+	}
 	/**
 	 * Get first String objects in String array from the given index
 	 * @param args String array
@@ -201,9 +214,11 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * @return String array of String objects from given index
 	 */
 	@Override
-	public String[] getArgs(@NotNull String[] args, int from){
-		String[] argsNew = new String[args.length-from];
-		if (args.length - from >= 0) System.arraycopy(args, from, argsNew, 0, args.length - from);
+	public ArgumentList getArgs(@NotNull ArgumentList args, int from){
+		ArgumentList argsNew = new ArgumentList();
+		if (args.size() - from >= 0) {
+			argsNew.addAll(args.subList(from,args.size()));
+		}
 		return argsNew;
 	}
 	protected static String colorText(String txt){

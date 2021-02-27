@@ -19,7 +19,7 @@ public class ArgumentList extends ForwardingList<String> {
 				return (E)value.getObject(get(idx));
 			}
 		}
-		throw new Exception("Nieprawidłowy argument");
+		throw new Exception("Nieprawidłowy argument nr "+idx);
 	}
 	@Override
 	protected List<String> delegate() {

@@ -1,5 +1,6 @@
 import com.lupus.command.framework.commands.LupusCommand;
 import com.lupus.command.framework.commands.SupCommand;
+import com.lupus.command.framework.commands.arguments.ArgumentList;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.command.CommandSender;
 
@@ -22,7 +23,7 @@ public class SupCommandMock extends SupCommand {
 	}
 
 	@Override
-	protected boolean optionalOperations(CommandSender sender, String[] args) {
+	protected boolean optionalOperations(CommandSender sender, ArgumentList args) {
 		System.out.println("Name:"+getName());
 		System.out.println("Desc:"+getDescription());
 		System.out.println("Usage:"+getDescription());

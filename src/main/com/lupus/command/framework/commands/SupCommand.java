@@ -1,5 +1,6 @@
 package com.lupus.command.framework.commands;
 
+import com.lupus.command.framework.commands.arguments.ArgumentList;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
@@ -31,16 +32,13 @@ public abstract class SupCommand extends LupusCommand {
 	 * @param subCommands
 	 */
 	public void addBulkCommands(LupusCommand[] subCommands){
-		List<String> commandList = new ArrayList<>();
 		for (int i = 0; i < subCommands.length; i++) {
 			LupusCommand subCommand = subCommands[i];
 			this.subCommands.put(subCommand.getName().toLowerCase(),subCommand);
-			commandList.add(subCommands[i].getName());
 			for (String alias : subCommand.getAliases()) {
 				this.subCommands.put(alias,subCommand);
 			}
 		}
-		autoComplete.put(0,commandList);
 	}
 	/**
 	 * Executes automatically subCommands
@@ -49,13 +47,13 @@ public abstract class SupCommand extends LupusCommand {
 	 * @return success of command
 	 */
 	@Override
-	public void run(CommandSender sender, String[] args) {
+	public void run(CommandSender sender, ArgumentList args) throws Exception {
 		if (!isArgumentAmountGood(sender,args)) {
 			return;
 		}
 		LupusCommand command = null;
-		if (args.length >= 1){
-			String subCommand = args[0].toLowerCase();
+		if (args.size() >= 1){
+			String subCommand = args.getArg(String.class,0);
 			command = subCommands.get(subCommand);
 		}
 		boolean ignoreRest = optionalOperations(sender,args);
@@ -89,8 +87,6 @@ public abstract class SupCommand extends LupusCommand {
 				if (command != null)
 					answer = command.tabComplete(sender, args[0], betterArgs);
 			}
-			if (answer == null)
-				answer = super.tabComplete(sender, alias, args);
 		}
 
 		return answer;
@@ -102,7 +98,7 @@ public abstract class SupCommand extends LupusCommand {
 	 * @param args arguments send by sender
 	 * @return true skips run auto subCommand selection
 	 */
-	protected boolean optionalOperations(CommandSender sender,String[] args){
+	protected boolean optionalOperations(CommandSender sender, ArgumentList args){
 		return false;
 	}
 }
