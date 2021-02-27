@@ -1,5 +1,6 @@
 package com.lupus.command.framework.commands;
 
+import com.lupus.command.framework.commands.arguments.ArgumentList;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ public abstract class PlayerSupCommand extends SupCommand {
 	}
 
 	@Override
-	public void run(CommandSender sender, String[] args){
+	public void run(CommandSender sender, ArgumentList args) throws Exception {
 		if(sender instanceof Player){
 			super.run(sender,args);
 		}

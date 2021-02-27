@@ -1,8 +1,6 @@
 package com.lupus.command.framework.commands;
 
 import com.lupus.command.framework.commands.arguments.ArgumentList;
-import com.lupus.utils.ColorUtil;
-import com.lupus.utils.Usage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -117,7 +115,7 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 */
 	public boolean isArgumentAmountGood(CommandSender sender, ArgumentList args){
 		if (args.size() < argumentAmount){
-			sender.sendMessage(ColorUtil.text2Color("Prawidłowe użycie komendy: " + getUsage()));
+			sender.sendMessage(colorText("Prawidłowe użycie komendy: " + getUsage()));
 			return false;
 		}
 		return true;
@@ -139,7 +137,7 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * @return colored description of command
 	 */
 	public String getDescription(){
-		return ColorUtil.text2Color(description);
+		return colorText(description);
 	}
 
 	/**
@@ -147,14 +145,14 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * @return colored usage of command
 	 */
 	public String usage(){
-		return ColorUtil.text2Color(this.usageMessage);
+		return colorText(this.usageMessage);
 	}
 
 	/**
 	 * Get usage and description of command separated by given colored string " &5 - &r"
 	 * @return colored usage and description of command
 	 */
-	public String getUsageDesc() { return ColorUtil.text2Color(usage() +" &5- &r"+ getDescription());}
+	public String getUsageDesc() { return colorText(usage() +" &5- &r"+ getDescription());}
 
 	/**
 	 * Gets name of command
@@ -179,13 +177,13 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * Points to the Usage.usage function
 	 */
 	public static String usage(String usage){
-		return Usage.usage(usage);
+		return colorText("&4"+usage);
 	}
 	/**
 	 * Points to the Usage.usage function
 	 */
 	public static String usage(String command,String usage){
-		return Usage.usage(command,usage);
+		return usage(command) + " &a" + usage;
 	}
 
 	/**
@@ -222,7 +220,7 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		return argsNew;
 	}
 	protected static String colorText(String txt){
-		return ColorUtil.text2Color(txt);
+		return ChatColor.translateAlternateColorCodes('&',txt);
 	}
 	private static Object getPrivateField(Object object, String field)throws SecurityException,
 			NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
