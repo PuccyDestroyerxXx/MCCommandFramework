@@ -14,15 +14,13 @@
             <url>https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api</url>
         </repository>
         <repository>
-            <id>github</id>
-            <name>GitHub PuccyDestroyerxXx Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/PuccyDestroyerxXx/SpigotUtilLibrary</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <build>
@@ -88,7 +86,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>plugin-annotations</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.2.3-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

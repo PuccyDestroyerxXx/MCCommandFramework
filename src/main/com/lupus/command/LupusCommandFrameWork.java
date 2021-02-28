@@ -24,10 +24,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-@Plugin(name="LupusCommandFramework", version="1.2-SNAPSHOT")
-@Description(desc = "Simple case opener")
-@Author(name = "LupusVirtute")
-@Website(url="github.com/PuccyDestroyerxXx")
+@Plugin(name="LupusCommandFramework", version="1.4")
+@Description("Simple case opener")
+@Author("LupusVirtute")
+@Website("github.com/PuccyDestroyerxXx")
 
 public class LupusCommandFrameWork extends JavaPlugin {
 	static LupusCommandFrameWork mainPlugin;
