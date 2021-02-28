@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 @Plugin(name="LupusCommandFramework", version="1.4")
-@Description("Simple case opener")
+@Description("Simple Command framework")
 @Author("LupusVirtute")
 @Website("github.com/PuccyDestroyerxXx")
 
