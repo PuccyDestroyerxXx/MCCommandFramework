@@ -38,5 +38,5 @@ public abstract class PlayerCommand extends LupusCommand {
 			sender.sendMessage(ChatColor.RED+ "Komenda tylko dla gracza");
 	}
 
-	protected abstract void run(Player executor, ArgumentList args);
+	protected abstract void run(Player executor, ArgumentList args) throws Exception;
 }
