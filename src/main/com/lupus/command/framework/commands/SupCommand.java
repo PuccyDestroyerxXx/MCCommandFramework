@@ -21,6 +21,9 @@ public abstract class SupCommand extends LupusCommand {
 	public SupCommand(String name,int argumentAmount, LupusCommand[] subCommands){
 		this(name,"",argumentAmount,subCommands);
 	}
+	public SupCommand(CommandMeta meta,LupusCommand[] subCommands){
+		this(meta.getName(), meta.getUsage(), meta.getDescription(), meta.getAliases(), meta.getPermissions(), meta.getArgumentAmount(),subCommands);
+	}
 	public LupusCommand[] getSubCommands(){
 		LupusCommand[] subCmds = new LupusCommand[subCommands.values().size()];
 		subCommands.values().toArray(subCmds);

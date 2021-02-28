@@ -25,7 +25,9 @@ public abstract class PlayerCommand extends LupusCommand {
 	public PlayerCommand(String name, int argumentAmount) {
 		this(name,"", argumentAmount);
 	}
-
+	public PlayerCommand(CommandMeta meta){
+		this(meta.getName(), meta.getUsage(), meta.getDescription(), meta.getAliases(), meta.getPermissions(), meta.getArgumentAmount());
+	}
 	@Override
 	public void run(CommandSender sender, ArgumentList args) throws Exception{
 		if(sender instanceof Player){

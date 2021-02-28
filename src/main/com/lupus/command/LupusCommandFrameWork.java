@@ -5,8 +5,6 @@ import com.lupus.command.framework.commands.LupusCommand;
 import com.lupus.command.framework.commands.SupCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.defaults.HelpCommand;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
@@ -20,7 +18,10 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 @Plugin(name="LupusCommandFramework", version="1.2-SNAPSHOT")
@@ -56,7 +57,6 @@ public class LupusCommandFrameWork extends JavaPlugin {
 				try {
 					registerCommandAliasesInServer();
 				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-
 				}
 			}
 		}.runTaskLater(this,1);

@@ -17,7 +17,9 @@ public abstract class PlayerSupCommand extends SupCommand {
 	public PlayerSupCommand(String name, int argumentAmount, LupusCommand[] subCommands) {
 		super(name, argumentAmount, subCommands);
 	}
-
+	public PlayerSupCommand(CommandMeta meta,LupusCommand[] subCommands){
+		this(meta.getName(), meta.getUsage(), meta.getDescription(), meta.getArgumentAmount(),subCommands);
+	}
 	@Override
 	public void run(CommandSender sender, ArgumentList args) throws Exception {
 		if(sender instanceof Player){
