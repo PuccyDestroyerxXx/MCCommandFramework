@@ -34,7 +34,6 @@ import java.util.*;
 
 public class LupusCommandFrameWork extends JavaPlugin {
 	static LupusCommandFrameWork mainPlugin;
-	static List<ILupusCommand> registeredCommands = new ArrayList<>();
 	public static LupusCommandFrameWork getInstance(){
 		return mainPlugin;
 	}
@@ -64,7 +63,7 @@ public class LupusCommandFrameWork extends JavaPlugin {
 				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
 				}
 			}
-		}.runTaskLater(this,1);
+		}.runTaskLaterAsynchronously(this,1);
 	}
 	public static void registerAllCommands(Object caller,ClassLoader classLoader){
 		if (!(caller instanceof JavaPlugin))
@@ -102,8 +101,7 @@ public class LupusCommandFrameWork extends JavaPlugin {
 
 				ILupusCommand command = constructWithNoArgs(aClass);
 				if (command != null) {
-					command.registerCommand();
-					registeredCommands.add(command);
+					Bukkit.getScheduler().runTask(mainPlugin, command::registerCommand);
 				}
 			}
 	}
