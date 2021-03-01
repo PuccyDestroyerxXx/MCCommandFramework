@@ -6,6 +6,8 @@ import com.lupus.command.framework.commands.SupCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.annotation.dependency.Dependency;
+import org.bukkit.plugin.java.annotation.dependency.DependsOn;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
@@ -17,6 +19,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
+import org.reflections.util.Utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +45,8 @@ public class LupusCommandFrameWork extends JavaPlugin {
 			@Override
 			public void run() {
 				for (org.bukkit.plugin.Plugin plugin : Bukkit.getServer().getPluginManager().getPlugins()) {
+					if (plugin == mainPlugin)
+						continue;
 					if (plugin == null)
 						continue;
 					if (!(plugin instanceof JavaPlugin))
@@ -64,21 +69,15 @@ public class LupusCommandFrameWork extends JavaPlugin {
 	public static void registerAllCommands(Object caller,ClassLoader classLoader){
 		if (!(caller instanceof JavaPlugin))
 			return;
-
 		String pckgName = caller.getClass().getPackage().getName();
 		List<ClassLoader> classLoadersList = new LinkedList<>();
 		classLoadersList.add(classLoader);
 		Reflections reflections = null;
+		reflections = new Reflections(new ConfigurationBuilder()
+				.setScanners(new SubTypesScanner(false), new ResourcesScanner())
+				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
+				.filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(pckgName))));
 
-		try {
-			reflections = new Reflections(new ConfigurationBuilder()
-					.setScanners(new SubTypesScanner(false), new ResourcesScanner())
-					.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
-					.filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(pckgName))));
-		}
-		catch (Exception ex){
-			return;
-		}
 		Set<Class<? extends ILupusCommand>> clazzSet = reflections.getSubTypesOf(ILupusCommand.class);
 		Set<Class<? extends SupCommand>> supCommands = reflections.getSubTypesOf(SupCommand.class);
 		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();

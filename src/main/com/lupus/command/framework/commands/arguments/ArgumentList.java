@@ -2,9 +2,10 @@ package com.lupus.command.framework.commands.arguments;
 
 import com.google.common.collect.ForwardingList;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ArgumentList extends ForwardingList<String> {
+public class ArgumentList extends ArrayList<String> {
 
 	private boolean isOutOfBounds(int idx){
 		return idx < 0 || idx >= size();
@@ -16,13 +17,17 @@ public class ArgumentList extends ForwardingList<String> {
 		}
 		for (ArgumentType value : ArgumentType.values()) {
 			if (value.checkIfComplies(clazz)) {
-				return (E)value.getObject(get(idx));
+				try {
+					E valueToReturn = (E) value.getObject(get(idx));
+					if (valueToReturn == null)
+						break;
+					return valueToReturn;
+				}
+				catch(Exception ex){
+					break;
+				}
 			}
 		}
-		throw new Exception("Nieprawidłowy argument nr "+idx);
-	}
-	@Override
-	protected List<String> delegate() {
-		return null;
+		throw new Exception("Nieprawidłowy argument nr "+(idx+1));
 	}
 }

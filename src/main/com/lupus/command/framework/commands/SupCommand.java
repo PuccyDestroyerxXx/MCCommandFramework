@@ -64,7 +64,7 @@ public abstract class SupCommand extends LupusCommand {
 			return;
 		args = getArgs(args,1);
 		if (command != null)
-			command.run(sender,args);
+			command.execute(sender,args.toArray(new String[0]));
 		else
 			usage();
 	}

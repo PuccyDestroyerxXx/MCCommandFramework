@@ -89,7 +89,8 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	@Override
 	public void execute(CommandSender sender,String[] args){
 		ArgumentList arguments = new ArgumentList();
-		arguments.addAll(Arrays.asList(args));
+		if (args.length > 0)
+			arguments.addAll(Arrays.asList(args));
 		if (permissions.size() != 0) {
 			boolean hasPermission = permissions.stream().anyMatch(sender::hasPermission);
 			if (!hasPermission){

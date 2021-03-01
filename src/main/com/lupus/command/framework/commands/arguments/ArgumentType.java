@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.time.Instant;
+
 public enum ArgumentType {
 	PLAYER(Player.class, (arg) -> Bukkit.getPlayer(arg[0]) ),
 	INTEGER(int.class,(arg) -> Integer.parseInt(arg[0]) ),
@@ -20,7 +22,7 @@ public enum ArgumentType {
 	private Class<?> clazz;
 
 	public boolean checkIfComplies(Class<?> clazz) {
-		return this.clazz.isInstance(clazz);
+		return this.clazz.isAssignableFrom(clazz);
 	}
 	public Object getObject(String... arguments){
 		return runner.run(arguments);
