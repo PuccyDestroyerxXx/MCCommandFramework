@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -26,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Plugin(name="LupusCommandFramework", version="1.4")
 @Description("Simple Command framework")
@@ -33,10 +35,12 @@ import java.util.*;
 @Website("github.com/PuccyDestroyerxXx")
 
 public class LupusCommandFrameWork extends JavaPlugin {
-	static LupusCommandFrameWork mainPlugin;
+	private static LupusCommandFrameWork mainPlugin;
 	public static LupusCommandFrameWork getInstance(){
 		return mainPlugin;
 	}
+	private List<Integer> doneTasksList = new CopyOnWriteArrayList<>();
+	private int tasks = 0;
 	@Override
 	public void onEnable() {
 		mainPlugin = this;
@@ -54,14 +58,26 @@ public class LupusCommandFrameWork extends JavaPlugin {
 					Class<?> clazz = plugin.getClass();
 					if (clazz == null)
 						continue;
-					ClassLoader classLoader = clazz.getClassLoader();
-					if (classLoader != null)
-						registerAllCommands(plug,classLoader);
+					Bukkit.getScheduler().runTaskAsynchronously(mainPlugin,() -> {
+						ClassLoader classLoader = clazz.getClassLoader();
+						if (classLoader != null)
+							registerAllCommands(plug,classLoader);
+						doneTasksList.add(doneTasksList.size());
+					});
+					tasks++;
 				}
-				try {
-					registerCommandAliasesInServer();
-				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-				}
+				new BukkitRunnable(){
+					public void run(){
+
+						if (doneTasksList.size() != tasks)
+							return;
+
+						try {
+							registerCommandAliasesInServer();
+						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+						}
+					}
+				}.runTaskTimer(mainPlugin,20,20);
 			}
 		}.runTaskLaterAsynchronously(this,1);
 	}
