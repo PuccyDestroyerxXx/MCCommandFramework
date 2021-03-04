@@ -10,6 +10,9 @@ public abstract class SupCommand extends LupusCommand {
 	public SupCommand(String name,String usage,String description,List<String> aliases,List<String> permissionNodes,int argumentAmount, LupusCommand[] subCommands) {
 		super(name,usage,description,aliases,permissionNodes,argumentAmount);
 		addBulkCommands(subCommands);
+		addBulkCommands(new LupusCommand[]{
+				new HelperCommand(this)
+		});
 	}
 	public SupCommand(String name,String usage,String description,int argumentAmount, LupusCommand[] subCommands) {
 		this(name,usage,description,new ArrayList<>(),new ArrayList<>(),argumentAmount,subCommands);
