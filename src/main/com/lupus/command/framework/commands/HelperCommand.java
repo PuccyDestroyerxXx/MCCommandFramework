@@ -15,6 +15,7 @@ public class HelperCommand extends LupusCommand {
 	public HelperCommand(SupCommand command) {
 		super(meta);
 		this.command = command;
+		this.usageMessage = this.usageMessage.replace("[komenda]",command.getName());
 	}
 
 	@Override
