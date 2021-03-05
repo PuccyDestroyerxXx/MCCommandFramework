@@ -4,10 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.time.Instant;
-
 public enum ArgumentType {
-	PLAYER(Player.class, (arg) -> Bukkit.getPlayer(arg[0]) ),
+	PLAYER(Player.class, (arg) -> {
+		Player player = Bukkit.getPlayer(arg[0]);
+		if (player == null)
+			throw new Exception("&4Gracz jest offline");
+		return player;
+	}),
 	INTEGER(int.class,(arg) -> Integer.parseInt(arg[0]) ),
 	DOUBLE(double.class,(arg) -> Double.parseDouble(arg[0]) ),
 	STRING(String.class, (arg) -> arg[0] ),
@@ -24,7 +27,7 @@ public enum ArgumentType {
 	public boolean checkIfComplies(Class<?> clazz) {
 		return this.clazz.isAssignableFrom(clazz);
 	}
-	public Object getObject(String... arguments){
+	public Object getObject(String... arguments) throws Exception {
 		return runner.run(arguments);
 	}
 }

@@ -14,7 +14,7 @@ public class CommandLimiter {
 	CommandLimiter(){
 	}
 	public void addLimit(UUID p,String command,long time){
-		time +=System.currentTimeMillis();
+		time += System.currentTimeMillis();
 		if (playerActionLimiter.containsKey(p))
 			playerActionLimiter.get(p).put(command.toLowerCase(),time);
 		else{

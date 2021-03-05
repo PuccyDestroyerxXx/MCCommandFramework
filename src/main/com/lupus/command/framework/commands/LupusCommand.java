@@ -104,7 +104,11 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		try {
 			run(sender, arguments);
 		} catch (Exception exception) {
-			sender.sendMessage(exception.getMessage());
+			if (exception instanceof NullPointerException) {
+				exception.printStackTrace();
+				return;
+			}
+			sender.sendMessage(colorText(exception.getMessage()));
 		}
 	}
 	/**

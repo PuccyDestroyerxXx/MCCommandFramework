@@ -9,13 +9,13 @@ public class HelperCommand extends LupusCommand {
 			addAlias("pomoc").
 			setDescription("pomoc").
 			setArgumentAmount(0).
-			setUsage(usage("/[komenda]","pomoc"));
+			setUsage(usage("/%komenda%","pomoc"));
 	private SupCommand command;
 
 	public HelperCommand(SupCommand command) {
 		super(meta);
 		this.command = command;
-		this.usageMessage = this.usageMessage.replace("[komenda]",command.getName());
+		this.usageMessage = this.usageMessage.replace("%komenda%",command.getName());
 	}
 
 	@Override
