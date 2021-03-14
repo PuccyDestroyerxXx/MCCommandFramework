@@ -12,6 +12,7 @@ public enum ArgumentType {
 		return player;
 	}),
 	INTEGER(int.class,(arg) -> Integer.parseInt(arg[0]) ),
+	UINTEGER(UInteger.class,(arg) -> new UInteger(Integer.parseInt(arg[0]))),
 	DOUBLE(double.class,(arg) -> Double.parseDouble(arg[0]) ),
 	STRING(String.class, (arg) -> arg[0] ),
 	OFFLINE_PLAYER(OfflinePlayer.class,(arg) -> Bukkit.getOfflinePlayer(arg[0]) ),
