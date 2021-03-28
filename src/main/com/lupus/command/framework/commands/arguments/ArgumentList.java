@@ -1,9 +1,6 @@
 package com.lupus.command.framework.commands.arguments;
 
-import com.google.common.collect.ForwardingList;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class ArgumentList extends ArrayList<String> {
 
