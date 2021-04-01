@@ -44,7 +44,7 @@ public class ArgumentType {
 			values.add(type);
 	}
 
-	private ArgumentType(Class<?> clazz, ArgumentRunner run) {
+	public ArgumentType(Class<?> clazz, ArgumentRunner run) {
 		runner = run;
 		this.clazz = clazz;
 	}
