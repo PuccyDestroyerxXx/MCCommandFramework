@@ -1,5 +1,6 @@
 package com.lupus.command.framework.commands.arguments;
 
+import com.lupus.command.LupusCommandFrameWork;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -12,17 +13,12 @@ public class ArgumentType {
 	private static HashSet<ArgumentType> values = new HashSet<>();
 	static {
 		ArgumentType[] arguments = {
-			new ArgumentType(Player.class, (arg) -> {
-				Player player = Bukkit.getPlayer(arg[0]);
-				if (player == null)
-					throw new Exception("&4Gracz jest offline");
-				return player;
-			}),
+			new ArgumentType(Player.class, (arg) -> LupusCommandFrameWork.getCache().getPlayer(arg[0])),
 			new ArgumentType(int.class,(arg) -> Integer.parseInt(arg[0]) ),
 			new ArgumentType(UInteger.class,(arg) -> new UInteger(Integer.parseInt(arg[0]))),
 			new ArgumentType(double.class,(arg) -> Double.parseDouble(arg[0]) ),
 			new ArgumentType(String.class, (arg) -> arg[0] ),
-			new ArgumentType(OfflinePlayer.class,(arg) -> Bukkit.getOfflinePlayer(arg[0]) ),
+			new ArgumentType(OfflinePlayer.class,(arg) -> LupusCommandFrameWork.getCache().getOfflinePlayer(arg[0]) ),
 		};
 		values.addAll(Arrays.asList(arguments));
 	}
