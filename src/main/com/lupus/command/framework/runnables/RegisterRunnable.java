@@ -4,23 +4,19 @@ import com.lupus.command.LupusCommandFrameWork;
 import com.lupus.command.framework.commands.ILupusCommand;
 import com.lupus.command.framework.commands.LupusCommand;
 import com.lupus.command.framework.commands.SupCommand;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfoList;
+import io.github.classgraph.ScanResult;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 
 public class RegisterRunnable extends BukkitRunnable {
 	Class<?> clazz;
@@ -32,27 +28,33 @@ public class RegisterRunnable extends BukkitRunnable {
 	}
 	@Override
 	public void run() {
-		ClassLoader classLoader = clazz.getClassLoader();
-		if (classLoader != null)
-			registerAllCommands(plugin,classLoader);
-		LupusCommandFrameWork instance = LupusCommandFrameWork.getInstance();
-		instance.getScanRunnable().addTaskDone(instance.getScanRunnable().getTaskSize());
+		try {
+			ClassLoader classLoader = clazz.getClassLoader();
+			if (classLoader != null)
+				registerAllCommands(plugin);
+		}
+		catch (Exception ignored){}
+
+		LupusCommandFrameWork.getScanRunnable().addTaskDone(
+				LupusCommandFrameWork.getScanRunnable().getTaskSize()
+		);
 	}
-	public void registerAllCommands(Object caller,ClassLoader classLoader){
+	public void registerAllCommands(Object caller){
 		if (!(caller instanceof JavaPlugin))
 			return;
 		String pckgName = caller.getClass().getPackage().getName();
-		List<ClassLoader> classLoadersList = new LinkedList<>();
-		classLoadersList.add(classLoader);
-		Reflections reflections;
-		reflections = new Reflections(new ConfigurationBuilder()
-				.setScanners(new SubTypesScanner(false), new ResourcesScanner())
-				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
-				.filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(pckgName))));
-
-		Set<Class<? extends ILupusCommand>> commands = reflections.getSubTypesOf(ILupusCommand.class);
-		Set<Class<? extends SupCommand>> supCommands = reflections.getSubTypesOf(SupCommand.class);
+		Set<Class<? extends ILupusCommand>> commands;
+		Set<Class<? extends SupCommand>> supCommands;
 		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();
+		try(ScanResult scanResult = new ClassGraph().
+				verbose(false).
+				acceptPackages(pckgName).
+				scan()
+		){
+			ClassInfoList classList = scanResult.getAllClasses();
+			commands = new HashSet<>(classList.loadClasses(ILupusCommand.class));
+			supCommands = new HashSet<>(classList.loadClasses(SupCommand.class));
+		}
 
 		if (supCommands.size() != 0)
 			constructSupCommands(supCommands,subCommands);

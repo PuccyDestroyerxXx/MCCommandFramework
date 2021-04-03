@@ -10,19 +10,23 @@ import java.lang.reflect.Method;
 
 public class SyncTimerRegister extends BukkitRunnable {
 	private int tasks;
+	private long time;
 
 	public SyncTimerRegister(int tasks) {
 		this.tasks = tasks;
+		time = System.currentTimeMillis();
 	}
 	@Override
 	public void run(){
-		LupusCommandFrameWork instance = LupusCommandFrameWork.getInstance();
-		if (instance.getScanRunnable().getTaskSize() != tasks)
+		var scanRunnable = LupusCommandFrameWork.getScanRunnable();
+		if (scanRunnable.getTaskSize() != tasks)
 			return;
 
 		try {
 			registerCommandAliasesInServer();
-			instance.getScanRunnable().clearTask();
+			scanRunnable.clearTask();
+			System.out.println("TIME TO BE DONE :");
+			System.out.println(time - System.currentTimeMillis());
 			cancel();
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
 		}

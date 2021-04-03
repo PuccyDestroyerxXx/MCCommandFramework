@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 
-@Plugin(name="LupusCommandFramework", version="1.4.4")
+@Plugin(name="LupusCommandFramework", version="1.5.1")
 @Description("Simple Command framework")
 @Author("LupusVirtute")
 @Website("github.com/PuccyDestroyerxXx")
@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 public class LupusCommandFrameWork extends JavaPlugin {
 	private static LupusCommandFrameWork mainPlugin;
 	private static ScanPluginsRunnable scanPluginsRunnable;
-	private static UserCache cache = new UserCache();
+	private static UserCache cache;
 	public static LupusCommandFrameWork getInstance(){
 		return mainPlugin;
 	}
@@ -29,5 +29,12 @@ public class LupusCommandFrameWork extends JavaPlugin {
 		mainPlugin = this;
 		scanPluginsRunnable = new ScanPluginsRunnable();
 		scanPluginsRunnable.runTaskLaterAsynchronously(this,1);
+		cache = new UserCache();
+		cache.load();
+	}
+
+	@Override
+	public void onDisable() {
+		cache.save();
 	}
 }

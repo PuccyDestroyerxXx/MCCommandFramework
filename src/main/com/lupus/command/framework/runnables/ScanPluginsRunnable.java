@@ -7,15 +7,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ScanPluginsRunnable extends BukkitRunnable {
 	private List<Integer> doneTasksList = new CopyOnWriteArrayList<>();
 	public void addTaskDone(int task){
-		doneTasksList.add(task);
+		atomicTask.addAndGet(1);
 	}
 	public int getTaskSize(){
-		return doneTasksList.size();
+		return atomicTask.get();
 	}
+	private AtomicInteger atomicTask = new AtomicInteger(0);
 	public void clearTask(){
 		doneTasksList = null;
 	}
