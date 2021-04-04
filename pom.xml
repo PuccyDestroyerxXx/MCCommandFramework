@@ -30,6 +30,14 @@
     <build>
         <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
         <sourceDirectory>src/main</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+                <includes>
+                    <include>messages.yml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

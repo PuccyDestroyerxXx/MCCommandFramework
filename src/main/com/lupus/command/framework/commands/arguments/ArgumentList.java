@@ -1,5 +1,8 @@
 package com.lupus.command.framework.commands.arguments;
 
+import com.lupus.command.framework.messages.Message;
+import com.lupus.command.framework.messages.MessageReplaceQuery;
+
 import java.util.ArrayList;
 
 public class ArgumentList extends ArrayList<String> {
@@ -25,6 +28,7 @@ public class ArgumentList extends ArrayList<String> {
 				}
 			}
 		}
-		throw new Exception("Nieprawidłowy argument nr "+(idx+1));
+		var mrq = new MessageReplaceQuery().add("arg",(idx+1)+"");
+		throw new Exception(Message.INCORRECT_ARGUMENT.toString(mrq));
 	}
 }

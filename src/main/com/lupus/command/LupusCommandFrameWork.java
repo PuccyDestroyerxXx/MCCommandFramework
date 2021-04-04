@@ -1,6 +1,7 @@
 package com.lupus.command;
 
 import com.lupus.command.framework.cache.UserCache;
+import com.lupus.command.framework.messages.Message;
 import com.lupus.command.framework.runnables.ScanPluginsRunnable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.Description;
@@ -31,6 +32,7 @@ public class LupusCommandFrameWork extends JavaPlugin {
 		scanPluginsRunnable.runTaskLaterAsynchronously(this,1);
 		cache = new UserCache();
 		cache.load();
+		Message.load();
 	}
 
 	@Override

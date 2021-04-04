@@ -33,7 +33,9 @@ public class RegisterRunnable extends BukkitRunnable {
 			if (classLoader != null)
 				registerAllCommands(plugin);
 		}
-		catch (Exception ignored){}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
 
 		LupusCommandFrameWork.getScanRunnable().addTaskDone(
 				LupusCommandFrameWork.getScanRunnable().getTaskSize()
@@ -42,17 +44,18 @@ public class RegisterRunnable extends BukkitRunnable {
 	public void registerAllCommands(Object caller){
 		if (!(caller instanceof JavaPlugin))
 			return;
-		String pckgName = caller.getClass().getPackage().getName();
 		Set<Class<? extends ILupusCommand>> commands;
 		Set<Class<? extends SupCommand>> supCommands;
 		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();
 		try(ScanResult scanResult = new ClassGraph().
 				verbose(false).
-				acceptPackages(pckgName).
+				enableClassInfo().
+				addClassLoader(caller.getClass().getClassLoader()).
 				scan()
 		){
-			ClassInfoList classList = scanResult.getAllClasses();
-			commands = new HashSet<>(classList.loadClasses(ILupusCommand.class));
+			ClassInfoList classList = scanResult.getClassesImplementing(ILupusCommand.class.getName());
+			commands = new HashSet<>(classList.loadClasses(LupusCommand.class));
+			classList = classList.filter((classInfo)-> classInfo.extendsSuperclass(SupCommand.class.getName()));
 			supCommands = new HashSet<>(classList.loadClasses(SupCommand.class));
 		}
 

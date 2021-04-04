@@ -25,8 +25,8 @@ public class SyncTimerRegister extends BukkitRunnable {
 		try {
 			registerCommandAliasesInServer();
 			scanRunnable.clearTask();
-			System.out.println("TIME TO BE DONE :");
-			System.out.println(time - System.currentTimeMillis());
+			System.out.println("Command scanner time :");
+			System.out.println(System.currentTimeMillis() - time + "ms");
 			cancel();
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
 		}

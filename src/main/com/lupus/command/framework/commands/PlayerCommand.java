@@ -1,12 +1,12 @@
 package com.lupus.command.framework.commands;
 
 import com.lupus.command.framework.commands.arguments.ArgumentList;
+import com.lupus.command.framework.messages.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class PlayerCommand extends LupusCommand {
@@ -35,7 +35,7 @@ public abstract class PlayerCommand extends LupusCommand {
 			run(player,args);
 		}
 		else
-			sender.sendMessage(ChatColor.RED+ "Komenda tylko dla gracza");
+			sender.sendMessage(Message.PLAYER_ONLY.toString());
 	}
 
 	protected abstract void run(Player executor, ArgumentList args) throws Exception;

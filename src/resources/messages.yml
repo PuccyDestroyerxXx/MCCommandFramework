@@ -1,0 +1,12 @@
+HELPER_COMMAND: '
+          ------ Komendy ------\n
+          %message%
+          ------ Komendy ------\n
+          '
+PLAYER_ONLY: "&4Komenda tylko dla gracza"
+TIME_LIMIT: "&cMasz nałożony limit czasowy na tą komende możesz użyć jej ponownie za &e%time%s"
+USAGE_DESC_TEMPLATE: '%usage% &5- &r %desc%'
+USAGE_PATTERN: '%command% %usage%'
+COMMAND_SHOW_PATTERN: '&4%command%'
+UINTEGER_ERROR: '&4Wartość musi być większa od zera'
+INCORRECT_ARGUMENT: 'Nieprawidłowy argument nr %arg%'

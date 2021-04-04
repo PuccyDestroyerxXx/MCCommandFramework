@@ -1,7 +1,12 @@
 package com.lupus.command.framework.commands;
 
 import com.lupus.command.framework.commands.arguments.ArgumentList;
+import com.lupus.command.framework.messages.Message;
+import com.lupus.command.framework.messages.MessageReplaceQuery;
 import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HelperCommand extends LupusCommand {
 	static CommandMeta meta = new CommandMeta().
@@ -10,7 +15,7 @@ public class HelperCommand extends LupusCommand {
 			setDescription("pomoc").
 			setArgumentAmount(0).
 			setUsage(usage("/%komenda%","pomoc"));
-	private SupCommand command;
+	private final SupCommand command;
 
 	public HelperCommand(SupCommand command) {
 		super(meta);
@@ -20,7 +25,13 @@ public class HelperCommand extends LupusCommand {
 
 	@Override
 	public void run(CommandSender sender, ArgumentList args) throws Exception {
+		var strBuilder = new StringBuilder();
+
 		for (LupusCommand subCommand : command.getSubCommands())
-			sender.sendMessage(colorText(subCommand.getUsageDesc()));
+			strBuilder.append(colorText(subCommand.getUsageDesc()));
+
+		var mrq = new MessageReplaceQuery().add("message",strBuilder.toString());
+
+		sender.sendMessage(Message.HELPER_COMMAND.toString(mrq));
 	}
 }

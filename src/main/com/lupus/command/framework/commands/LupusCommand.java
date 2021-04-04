@@ -1,6 +1,8 @@
 package com.lupus.command.framework.commands;
 
 import com.lupus.command.framework.commands.arguments.ArgumentList;
+import com.lupus.command.framework.messages.Message;
+import com.lupus.command.framework.messages.MessageReplaceQuery;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -52,18 +54,9 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		if (!testPermission(sender)) return true;
 		if(sender instanceof Player)
 			if (CommandLimiter.INSTANCE.hasLimit((Player)sender,getName())) {
-
-				StringBuilder builder = new StringBuilder();
-				builder.append(ChatColor.RED).
-				append("Masz nałożony limit czasowy na tą komende możesz użyć jej ponownie za ").
-				append(ChatColor.YELLOW).
-				append(
-						CommandLimiter.INSTANCE.getTimeLeft((Player) sender, getName()) / 1000
-				).
-				append("s");
-
-				String string =  builder.toString();
-				sender.sendMessage(string);
+				var mrq = new MessageReplaceQuery().
+						add("time",(CommandLimiter.INSTANCE.getTimeLeft((Player) sender, getName()) / 1000) + "");
+				sender.sendMessage(Message.TIME_LIMIT.toString(mrq));
 				return true;
 			}
 		execute(sender, strings);
@@ -157,7 +150,11 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * Get usage and description of command separated by given colored string " &5 - &r"
 	 * @return colored usage and description of command
 	 */
-	public String getUsageDesc() { return colorText(usage() +" &5- &r"+ getDescription());}
+	public String getUsageDesc() {
+		var mrq = new MessageReplaceQuery().
+				add("usage",usage()).
+				add("desc",getDescription());
+		return colorText(Message.USAGE_DESC_TEMPLATE.toString(mrq));}
 
 	/**
 	 * Gets name of command
@@ -182,13 +179,20 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 	 * Points to the Usage.usage function
 	 */
 	public static String usage(String usage){
-		return colorText("&4"+usage);
+		var mrq = new MessageReplaceQuery().
+				add("command",usage);
+
+		return Message.COMMAND_SHOW_PATTERN.toString(mrq);
 	}
 	/**
 	 * Points to the Usage.usage function
 	 */
-	public static String usage(String command,String usage){
-		return usage(command) + " &a" + usage;
+	public static String usage(String command,String usage) {
+		var mrq = new MessageReplaceQuery().
+				add("command",usage(command)).
+				add("usage",usage);
+
+		return Message.USAGE_PATTERN.toString(mrq);
 	}
 
 	/**
