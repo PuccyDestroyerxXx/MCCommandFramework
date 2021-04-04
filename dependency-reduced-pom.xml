@@ -7,6 +7,14 @@
   <build>
     <sourceDirectory>src/main</sourceDirectory>
     <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/resources</directory>
+        <includes>
+          <include>messages.yml</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>

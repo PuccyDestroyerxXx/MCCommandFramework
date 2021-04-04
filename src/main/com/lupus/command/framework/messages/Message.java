@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 public enum Message {
@@ -27,13 +26,13 @@ public enum Message {
 
 	public static void load(){
 		FileConfiguration conf;
-		conf = getConfig(new File("Messages.yml"));
+		conf = getConfig(new File(LupusCommandFrameWork.getInstance().getDataFolder(),"messages.yml"));
 
 		for (Message value : values()) {
 			value.setText(
 					conf.getString(
 							value.name(), // Value path to get
-							value.name() // Default VALUE
+							value.name()  // Default VALUE
 					)
 			);
 		}
@@ -58,7 +57,7 @@ public enum Message {
 		String copiedText = text; // We copy text because we don't want to clear our formatting
 		for (Map.Entry<String, String> stringStringEntry : replaceMap.entrySet())
 			copiedText = copiedText.replace(
-					stringStringEntry.getKey(),
+					"%"+stringStringEntry.getKey()+"%",
 					stringStringEntry.getValue()
 			);
 		return copiedText;

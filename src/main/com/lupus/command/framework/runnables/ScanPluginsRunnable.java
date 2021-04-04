@@ -1,6 +1,7 @@
 package com.lupus.command.framework.runnables;
 
 import com.lupus.command.LupusCommandFrameWork;
+import com.lupus.command.framework.commands.ReloadMessagesCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -8,8 +9,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ScanPluginsRunnable extends BukkitRunnable {
 	private List<Integer> doneTasksList = new CopyOnWriteArrayList<>();
@@ -26,6 +25,8 @@ public class ScanPluginsRunnable extends BukkitRunnable {
 	private int tasks = 0;
 	@Override
 	public void run() {
+		var reloadCommand = new ReloadMessagesCommand();
+		reloadCommand.registerCommand();
 		for (org.bukkit.plugin.Plugin plugin : Bukkit.getServer().getPluginManager().getPlugins()) {
 			if (plugin == LupusCommandFrameWork.getInstance())
 				continue;

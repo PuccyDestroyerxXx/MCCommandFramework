@@ -48,8 +48,8 @@ public class UserCache extends HashMap<String,UUID> {
 		}
 		try {
 			config.save(cacheFile);
-		} catch (IOException ignored) {
-
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 	}
