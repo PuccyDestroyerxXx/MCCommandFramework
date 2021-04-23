@@ -4,12 +4,15 @@ import com.lupus.command.LupusCommandFrameWork;
 import com.lupus.command.framework.commands.ILupusCommand;
 import com.lupus.command.framework.commands.LupusCommand;
 import com.lupus.command.framework.commands.SupCommand;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfoList;
-import io.github.classgraph.ScanResult;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 
 import java.lang.reflect.Constructor;
@@ -47,17 +50,27 @@ public class RegisterRunnable extends BukkitRunnable {
 		Set<Class<? extends ILupusCommand>> commands;
 		Set<Class<? extends SupCommand>> supCommands;
 		Set<Class<? extends ILupusCommand>> subCommands = new HashSet<>();
-		try(ScanResult scanResult = new ClassGraph().
-				verbose(false).
-				enableClassInfo().
-				addClassLoader(caller.getClass().getClassLoader()).
-				scan()
-		){
-			ClassInfoList classList = scanResult.getClassesImplementing(ILupusCommand.class.getName());
-			commands = new HashSet<>(classList.loadClasses(LupusCommand.class));
-			classList = classList.filter((classInfo)-> classInfo.extendsSuperclass(SupCommand.class.getName()));
-			supCommands = new HashSet<>(classList.loadClasses(SupCommand.class));
-		}
+
+		String pckgName = caller.getClass().getPackage().getName();
+		List<ClassLoader> classLoadersList = new LinkedList<>();
+		classLoadersList.add(caller.getClass().getClassLoader());
+		Reflections reflections;
+		reflections = new Reflections(new ConfigurationBuilder()
+				.setScanners(
+						new SubTypesScanner(false), new ResourcesScanner()
+				)
+				.setUrls(
+						ClasspathHelper.forClassLoader(
+								classLoadersList.toArray(new ClassLoader[0])
+						)
+				)
+				.filterInputsBy(
+						new FilterBuilder().include(FilterBuilder.prefix(pckgName))
+				)
+		);
+
+		commands = reflections.getSubTypesOf(ILupusCommand.class);
+		supCommands = reflections.getSubTypesOf(SupCommand.class);
 
 		if (supCommands.size() != 0)
 			constructSupCommands(supCommands,subCommands);
