@@ -30,11 +30,13 @@ public class LupusCommandFrameWork extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		mainPlugin = this;
-		scanPluginsRunnable = new ScanPluginsRunnable();
-		scanPluginsRunnable.runTaskLaterAsynchronously(this,1);
+
 		cache = new UserCache();
 		cache.load();
 		Message.load();
+
+		scanPluginsRunnable = new ScanPluginsRunnable();
+		scanPluginsRunnable.runTaskLaterAsynchronously(this,1);
 		var list = new PlayerJoinListener();
 		Bukkit.getPluginManager().registerEvents(list,this);
 	}

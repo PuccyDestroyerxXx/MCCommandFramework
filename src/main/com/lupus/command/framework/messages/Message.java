@@ -17,7 +17,7 @@ public enum Message {
 	COMMAND_SHOW_PATTERN,
 	UINTEGER_ERROR,
 	INCORRECT_ARGUMENT,
-	;
+	NO_PERMISSION;
 	private String text;
 
 	Message(){

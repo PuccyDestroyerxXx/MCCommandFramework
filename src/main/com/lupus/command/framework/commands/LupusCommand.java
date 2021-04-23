@@ -18,19 +18,17 @@ import java.util.*;
 public abstract class LupusCommand extends Command implements ILupusCommand {
 	protected int argumentAmount;
 	protected Set<String> permissions = new HashSet<>();
-	static final String FAILED_PERMISSION_CHECK = colorText("&4&lBrak permisji do tej komendy");
-
+	protected CommandMeta meta;
 	public LupusCommand(String name,String usage,String description,List<String> aliases,List<String> permissionNodes,int argumentAmount){
-		super(name,description,usage,aliases);
-		this.argumentAmount = argumentAmount;
-		List<String> resultAliases = new ArrayList<>(aliases);
-		resultAliases.add(name);
-		this.setAliases(resultAliases);
-		if (permissionNodes.size() > 0)
-			super.setPermission(permissionNodes.get(0));
-		permissions.addAll(permissionNodes);
-
-		super.setPermissionMessage(FAILED_PERMISSION_CHECK);
+		this(new CommandMeta().
+				setName(name).
+				setUsage(usage).
+				setDescription(description).
+				setArgumentAmount(argumentAmount).
+				addAliases(aliases).
+				addPermissions(permissionNodes).
+				setPermissionDeniedMessage(Message.NO_PERMISSION.toString())
+		);
 	}
 
 	public LupusCommand(String name,String usage,String desc,List<String> aliases,int argumentAmount){
@@ -47,7 +45,36 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		this(name,colorText("&4&l-&r"),colorText("&4&l-&r"),new ArrayList<>(),new ArrayList<>(),argumentAmount);
 	}
 	public LupusCommand(CommandMeta meta){
-		this(meta.getName(), meta.getUsage(), meta.getDescription(), meta.getAliases(), meta.getPermissions(), meta.getArgumentAmount());
+		super(meta.getName(),meta.getDescription(),meta.getUsage(),meta.getAliases());
+		this.meta = meta;
+		setupMeta();
+	}
+	private void setupMeta(){
+		this.argumentAmount = meta.getArgumentAmount();
+		List<String> resultAliases = new ArrayList<>(meta.getAliases());
+		resultAliases.add(meta.getName());
+		this.setAliases(resultAliases);
+
+		if (meta.getPermissions().size() > 0) {
+			StringBuilder permissionBuilder = new StringBuilder();
+			for (String permission : meta.getPermissions()) {
+				permissionBuilder.append(permission).append(';');
+			}
+			super.setPermission(permissionBuilder.toString());
+		}
+
+		permissions.addAll(meta.getPermissions());
+
+		super.setPermissionMessage(meta.getPermissionDenied());
+	}
+	@Override
+	public CommandMeta getMeta(){
+		return meta;
+	}
+	@Override
+	public void updateMeta(CommandMeta meta){
+		this.meta = meta;
+		setupMeta();
 	}
 	@Override
 	public boolean execute(CommandSender sender, String s, String[] strings) {
