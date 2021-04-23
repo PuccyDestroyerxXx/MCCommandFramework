@@ -5,6 +5,9 @@ import com.lupus.command.framework.messages.Message;
 import com.lupus.command.framework.messages.MessageReplaceQuery;
 import org.bukkit.command.CommandSender;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class HelperCommand extends LupusCommand {
 	static CommandMeta meta = new CommandMeta().
 			setName("help").
@@ -23,9 +26,13 @@ public class HelperCommand extends LupusCommand {
 	@Override
 	public void run(CommandSender sender, ArgumentList args) throws Exception {
 		var strBuilder = new StringBuilder();
-
-		for (LupusCommand subCommand : command.getSubCommands())
-			strBuilder.append(colorText(subCommand.getUsageDesc())).append('\n');
+		Set<LupusCommand> subCommands = new HashSet<>();
+		for (LupusCommand subCommand : command.getSubCommands()) {
+			if (subCommands.contains(subCommand))
+				continue;
+			subCommands.add(subCommand);
+			strBuilder.append(colorText(subCommand.getUsageDesc())).append('\n').append("&r");
+		}
 
 		var mrq = new MessageReplaceQuery().add("message",strBuilder.toString());
 

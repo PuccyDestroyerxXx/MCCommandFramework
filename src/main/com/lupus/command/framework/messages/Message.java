@@ -31,8 +31,8 @@ public enum Message {
 		for (Message value : values()) {
 			value.setText(
 					conf.getString(
-							value.name(), // Value path to get
-							value.name()  // Default VALUE
+							value.name(),
+							value.name()
 					)
 			);
 		}
@@ -54,12 +54,12 @@ public enum Message {
 		return toString(query.getQuery());
 	}
 	public String toString(Map<String,String> replaceMap){
-		String copiedText = text; // We copy text because we don't want to clear our formatting
+		String copiedText = text;
 		for (Map.Entry<String, String> stringStringEntry : replaceMap.entrySet())
 			copiedText = copiedText.replace(
 					"%"+stringStringEntry.getKey()+"%",
 					stringStringEntry.getValue()
 			);
-		return copiedText;
+		return ChatColor.translateAlternateColorCodes('&',copiedText);
 	}
 }
