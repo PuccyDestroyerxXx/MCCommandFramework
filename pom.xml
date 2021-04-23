@@ -88,7 +88,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>io.github.classgraph:classgraph</include>
+                                    <include>org.reflections:reflections</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -143,9 +143,9 @@
             <version>2.22.2</version>
         </dependency>
         <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>LATEST</version>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.12</version>
         </dependency>
     </dependencies>
     <properties>
