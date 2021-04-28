@@ -6,7 +6,7 @@
 
     <groupId>org.lupus</groupId>
     <artifactId>KorwinCommandFrameWork</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
     <packaging>jar</packaging>
     <repositories>
         <repository>

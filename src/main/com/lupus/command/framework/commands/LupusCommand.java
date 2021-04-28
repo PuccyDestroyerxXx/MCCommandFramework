@@ -278,4 +278,15 @@ public abstract class LupusCommand extends Command implements ILupusCommand {
 		}
 	}
 
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i];
+			var func = meta.getTabFunction(i);
+			if (func != null)
+				func.tabComplete(sender,this,arg);
+
+		}
+		return super.tabComplete(sender, alias, args);
+	}
 }
